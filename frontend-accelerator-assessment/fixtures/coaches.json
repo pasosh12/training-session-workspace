@@ -1,0 +1,19 @@
+{
+  "data": [
+    {
+      "id": "coach_01",
+      "name": "Maya Brooks",
+      "email": "maya@example.test"
+    },
+    {
+      "id": "coach_02",
+      "name": "Ethan Cole",
+      "email": "ethan@example.test"
+    },
+    {
+      "id": "coach_03",
+      "name": "Lena Ortiz",
+      "email": "lena@example.test"
+    }
+  ]
+}

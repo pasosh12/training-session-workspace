@@ -1,0 +1,25 @@
+{
+  "id": "ses_105",
+  "title": "U12 Team Fundamentals",
+  "type": "training",
+  "status": "completed",
+  "startsAt": "2026-07-24T15:00:00Z",
+  "durationMinutes": 90,
+  "capacity": 20,
+  "bookedCount": 17,
+  "visibility": "public",
+  "coach": {
+    "id": "coach_02",
+    "name": "Ethan Cole",
+    "email": "ethan@example.test"
+  },
+  "location": {
+    "name": "Central Sports Hall",
+    "address": "240 Market Avenue"
+  },
+  "description": "Team fundamentals session covering spacing, passing angles, and transition habits.",
+  "trainerNotes": "Completed without incident; retain the same progression for the next group.",
+  "createdAt": "2026-07-10T09:00:00Z",
+  "updatedAt": "2026-07-24T17:10:00Z",
+  "cancellation": null
+}

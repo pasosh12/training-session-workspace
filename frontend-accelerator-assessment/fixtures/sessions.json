@@ -1,0 +1,114 @@
+{
+  "data": [
+    {
+      "id": "ses_101",
+      "title": "U14 Shooting Lab",
+      "type": "training",
+      "status": "scheduled",
+      "startsAt": "2026-08-03T16:00:00Z",
+      "durationMinutes": 90,
+      "capacity": 18,
+      "bookedCount": 14,
+      "visibility": "public",
+      "coach": {
+        "id": "coach_01",
+        "name": "Maya Brooks",
+        "email": "maya@example.test"
+      },
+      "location": {
+        "name": "North Court",
+        "address": "18 Harbor Street"
+      },
+      "updatedAt": "2026-07-26T09:15:00Z"
+    },
+    {
+      "id": "ses_102",
+      "title": "Varsity Defense Intensive",
+      "type": "camp",
+      "status": "full",
+      "startsAt": "2026-08-04T13:30:00Z",
+      "durationMinutes": 180,
+      "capacity": 24,
+      "bookedCount": 24,
+      "visibility": "public",
+      "coach": {
+        "id": "coach_02",
+        "name": "Ethan Cole",
+        "email": "ethan@example.test"
+      },
+      "location": {
+        "name": "Central Sports Hall",
+        "address": "240 Market Avenue"
+      },
+      "updatedAt": "2026-07-27T07:40:00Z"
+    },
+    {
+      "id": "ses_103",
+      "title": "Private Footwork Review",
+      "type": "private",
+      "status": "scheduled",
+      "startsAt": "2026-08-05T17:00:00Z",
+      "durationMinutes": 60,
+      "capacity": 1,
+      "bookedCount": 0,
+      "visibility": "invite-only",
+      "coach": {
+        "id": "coach_01",
+        "name": "Maya Brooks",
+        "email": "maya@example.test"
+      },
+      "location": {
+        "name": "Studio B",
+        "address": "18 Harbor Street"
+      },
+      "updatedAt": "2026-07-25T15:20:00Z"
+    },
+    {
+      "id": "ses_104",
+      "title": "Weekend Ball Handling",
+      "type": "training",
+      "status": "cancelled",
+      "startsAt": "2026-08-08T09:00:00Z",
+      "durationMinutes": 75,
+      "capacity": 16,
+      "bookedCount": 9,
+      "visibility": "public",
+      "coach": {
+        "id": "coach_03",
+        "name": "Lena Ortiz",
+        "email": "lena@example.test"
+      },
+      "location": {
+        "name": "West Community Gym",
+        "address": "51 Pine Road"
+      },
+      "updatedAt": "2026-07-27T11:05:00Z"
+    },
+    {
+      "id": "ses_105",
+      "title": "U12 Team Fundamentals",
+      "type": "training",
+      "status": "completed",
+      "startsAt": "2026-07-24T15:00:00Z",
+      "durationMinutes": 90,
+      "capacity": 20,
+      "bookedCount": 17,
+      "visibility": "public",
+      "coach": {
+        "id": "coach_02",
+        "name": "Ethan Cole",
+        "email": "ethan@example.test"
+      },
+      "location": {
+        "name": "Central Sports Hall",
+        "address": "240 Market Avenue"
+      },
+      "updatedAt": "2026-07-24T17:10:00Z"
+    }
+  ],
+  "meta": {
+    "page": 1,
+    "pageSize": 10,
+    "total": 5
+  }
+}

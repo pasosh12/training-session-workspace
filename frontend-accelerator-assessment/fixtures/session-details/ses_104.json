@@ -1,0 +1,28 @@
+{
+  "id": "ses_104",
+  "title": "Weekend Ball Handling",
+  "type": "training",
+  "status": "cancelled",
+  "startsAt": "2026-08-08T09:00:00Z",
+  "durationMinutes": 75,
+  "capacity": 16,
+  "bookedCount": 9,
+  "visibility": "public",
+  "coach": {
+    "id": "coach_03",
+    "name": "Lena Ortiz",
+    "email": "lena@example.test"
+  },
+  "location": {
+    "name": "West Community Gym",
+    "address": "51 Pine Road"
+  },
+  "description": "Weekend fundamentals session covering control, pace changes, and pressure handling.",
+  "trainerNotes": "Participants were notified through the normal offline process.",
+  "createdAt": "2026-07-21T10:10:00Z",
+  "updatedAt": "2026-07-27T11:05:00Z",
+  "cancellation": {
+    "reason": "The gym is unavailable.",
+    "cancelledAt": "2026-07-27T11:00:00Z"
+  }
+}

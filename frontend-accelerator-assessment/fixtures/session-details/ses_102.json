@@ -1,0 +1,25 @@
+{
+  "id": "ses_102",
+  "title": "Varsity Defense Intensive",
+  "type": "camp",
+  "status": "full",
+  "startsAt": "2026-08-04T13:30:00Z",
+  "durationMinutes": 180,
+  "capacity": 24,
+  "bookedCount": 24,
+  "visibility": "public",
+  "coach": {
+    "id": "coach_02",
+    "name": "Ethan Cole",
+    "email": "ethan@example.test"
+  },
+  "location": {
+    "name": "Central Sports Hall",
+    "address": "240 Market Avenue"
+  },
+  "description": "Half-day defensive rotations, closeouts, and transition communication intensive.",
+  "trainerNotes": "Confirm that both side courts are available before setup.",
+  "createdAt": "2026-07-19T08:20:00Z",
+  "updatedAt": "2026-07-27T07:40:00Z",
+  "cancellation": null
+}

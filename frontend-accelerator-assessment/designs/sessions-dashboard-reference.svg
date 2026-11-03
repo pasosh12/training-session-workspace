@@ -1,0 +1,86 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="900" viewBox="0 0 1440 900" role="img" aria-labelledby="title desc">
+  <title id="title">Training sessions workspace reference</title>
+  <desc id="desc">Desktop information hierarchy with sidebar, page actions, filters, session table, and details panel.</desc>
+  <rect width="1440" height="900" fill="#F5F7F8"/>
+  <rect width="224" height="900" fill="#172124"/>
+  <text x="28" y="46" fill="#FFFFFF" font-family="Arial, sans-serif" font-size="20" font-weight="700">COURTSIDE</text>
+  <text x="28" y="96" fill="#B9C5C8" font-family="Arial, sans-serif" font-size="12">OPERATIONS</text>
+  <rect x="16" y="116" width="192" height="40" rx="6" fill="#24423F"/>
+  <text x="32" y="142" fill="#FFFFFF" font-family="Arial, sans-serif" font-size="14" font-weight="700">Sessions</text>
+  <text x="32" y="190" fill="#D7DEE0" font-family="Arial, sans-serif" font-size="14">Coaches</text>
+  <text x="32" y="230" fill="#D7DEE0" font-family="Arial, sans-serif" font-size="14">Locations</text>
+  <text x="32" y="270" fill="#D7DEE0" font-family="Arial, sans-serif" font-size="14">Programs</text>
+
+  <text x="264" y="62" fill="#172124" font-family="Arial, sans-serif" font-size="26" font-weight="700">Training sessions</text>
+  <text x="264" y="88" fill="#5F6B6F" font-family="Arial, sans-serif" font-size="14">Find scheduled work, review capacity, and make schedule changes.</text>
+  <rect x="1224" y="38" width="176" height="44" rx="6" fill="#087F72"/>
+  <text x="1264" y="66" fill="#FFFFFF" font-family="Arial, sans-serif" font-size="14" font-weight="700">Create session</text>
+
+  <rect x="264" y="122" width="1136" height="70" rx="6" fill="#FFFFFF" stroke="#D7DEE0"/>
+  <rect x="284" y="138" width="344" height="38" rx="5" fill="#FFFFFF" stroke="#AAB6B9"/>
+  <text x="302" y="162" fill="#7A868A" font-family="Arial, sans-serif" font-size="13">Search title, coach, or location</text>
+  <rect x="644" y="138" width="150" height="38" rx="5" fill="#FFFFFF" stroke="#AAB6B9"/>
+  <text x="660" y="162" fill="#374347" font-family="Arial, sans-serif" font-size="13">All statuses</text>
+  <rect x="810" y="138" width="150" height="38" rx="5" fill="#FFFFFF" stroke="#AAB6B9"/>
+  <text x="826" y="162" fill="#374347" font-family="Arial, sans-serif" font-size="13">All types</text>
+  <text x="980" y="162" fill="#087F72" font-family="Arial, sans-serif" font-size="13" font-weight="700">Clear filters</text>
+
+  <rect x="264" y="216" width="800" height="620" rx="6" fill="#FFFFFF" stroke="#D7DEE0"/>
+  <text x="288" y="252" fill="#172124" font-family="Arial, sans-serif" font-size="14" font-weight="700">5 sessions</text>
+  <line x1="264" y1="272" x2="1064" y2="272" stroke="#D7DEE0"/>
+  <text x="288" y="302" fill="#5F6B6F" font-family="Arial, sans-serif" font-size="11" font-weight="700">SESSION</text>
+  <text x="520" y="302" fill="#5F6B6F" font-family="Arial, sans-serif" font-size="11" font-weight="700">START</text>
+  <text x="664" y="302" fill="#5F6B6F" font-family="Arial, sans-serif" font-size="11" font-weight="700">COACH</text>
+  <text x="818" y="302" fill="#5F6B6F" font-family="Arial, sans-serif" font-size="11" font-weight="700">CAPACITY</text>
+  <text x="934" y="302" fill="#5F6B6F" font-family="Arial, sans-serif" font-size="11" font-weight="700">STATUS</text>
+
+  <rect x="272" y="320" width="784" height="86" fill="#EAF5F3"/>
+  <text x="288" y="350" fill="#172124" font-family="Arial, sans-serif" font-size="14" font-weight="700">U14 Shooting Lab</text>
+  <text x="288" y="374" fill="#5F6B6F" font-family="Arial, sans-serif" font-size="12">Training / North Court</text>
+  <text x="520" y="350" fill="#172124" font-family="Arial, sans-serif" font-size="13">Aug 3, 18:00</text>
+  <text x="520" y="374" fill="#5F6B6F" font-family="Arial, sans-serif" font-size="12">90 minutes</text>
+  <text x="664" y="350" fill="#172124" font-family="Arial, sans-serif" font-size="13">Maya Brooks</text>
+  <text x="818" y="350" fill="#172124" font-family="Arial, sans-serif" font-size="13">14 / 18</text>
+  <rect x="934" y="334" width="88" height="28" rx="6" fill="#DDF1E4"/>
+  <text x="950" y="353" fill="#217A3C" font-family="Arial, sans-serif" font-size="12" font-weight="700">Scheduled</text>
+
+  <line x1="280" y1="422" x2="1048" y2="422" stroke="#E5EAEB"/>
+  <text x="288" y="454" fill="#172124" font-family="Arial, sans-serif" font-size="14" font-weight="700">Varsity Defense Intensive</text>
+  <text x="288" y="478" fill="#5F6B6F" font-family="Arial, sans-serif" font-size="12">Camp / Central Sports Hall</text>
+  <text x="520" y="454" fill="#172124" font-family="Arial, sans-serif" font-size="13">Aug 4, 15:30</text>
+  <text x="520" y="478" fill="#5F6B6F" font-family="Arial, sans-serif" font-size="12">180 minutes</text>
+  <text x="664" y="454" fill="#172124" font-family="Arial, sans-serif" font-size="13">Ethan Cole</text>
+  <text x="818" y="454" fill="#172124" font-family="Arial, sans-serif" font-size="13">24 / 24</text>
+  <rect x="934" y="438" width="66" height="28" rx="6" fill="#FFF0CF"/>
+  <text x="951" y="457" fill="#9A6200" font-family="Arial, sans-serif" font-size="12" font-weight="700">Full</text>
+
+  <line x1="280" y1="510" x2="1048" y2="510" stroke="#E5EAEB"/>
+  <text x="288" y="542" fill="#172124" font-family="Arial, sans-serif" font-size="14" font-weight="700">Weekend Ball Handling</text>
+  <text x="288" y="566" fill="#5F6B6F" font-family="Arial, sans-serif" font-size="12">Training / West Community Gym</text>
+  <text x="520" y="542" fill="#172124" font-family="Arial, sans-serif" font-size="13">Aug 8, 11:00</text>
+  <text x="520" y="566" fill="#5F6B6F" font-family="Arial, sans-serif" font-size="12">75 minutes</text>
+  <text x="664" y="542" fill="#172124" font-family="Arial, sans-serif" font-size="13">Lena Ortiz</text>
+  <text x="818" y="542" fill="#172124" font-family="Arial, sans-serif" font-size="13">9 / 16</text>
+  <rect x="934" y="526" width="88" height="28" rx="6" fill="#FBE4E2"/>
+  <text x="947" y="545" fill="#B42318" font-family="Arial, sans-serif" font-size="12" font-weight="700">Cancelled</text>
+
+  <rect x="1088" y="216" width="312" height="620" rx="6" fill="#FFFFFF" stroke="#D7DEE0"/>
+  <text x="1112" y="252" fill="#5F6B6F" font-family="Arial, sans-serif" font-size="12" font-weight="700">SESSION DETAILS</text>
+  <text x="1112" y="290" fill="#172124" font-family="Arial, sans-serif" font-size="19" font-weight="700">U14 Shooting Lab</text>
+  <rect x="1112" y="310" width="88" height="28" rx="6" fill="#DDF1E4"/>
+  <text x="1128" y="329" fill="#217A3C" font-family="Arial, sans-serif" font-size="12" font-weight="700">Scheduled</text>
+  <text x="1112" y="376" fill="#5F6B6F" font-family="Arial, sans-serif" font-size="12">START</text>
+  <text x="1112" y="400" fill="#172124" font-family="Arial, sans-serif" font-size="14">Monday, Aug 3 at 18:00</text>
+  <text x="1112" y="438" fill="#5F6B6F" font-family="Arial, sans-serif" font-size="12">COACH</text>
+  <text x="1112" y="462" fill="#172124" font-family="Arial, sans-serif" font-size="14">Maya Brooks</text>
+  <text x="1112" y="500" fill="#5F6B6F" font-family="Arial, sans-serif" font-size="12">CAPACITY</text>
+  <text x="1112" y="524" fill="#172124" font-family="Arial, sans-serif" font-size="14">14 booked of 18 places</text>
+  <rect x="1112" y="548" width="240" height="8" rx="4" fill="#E0E7E8"/>
+  <rect x="1112" y="548" width="187" height="8" rx="4" fill="#087F72"/>
+  <text x="1112" y="602" fill="#5F6B6F" font-family="Arial, sans-serif" font-size="12">TRAINER NOTES</text>
+  <text x="1112" y="628" fill="#374347" font-family="Arial, sans-serif" font-size="13">Bring the portable shot clock</text>
+  <text x="1112" y="648" fill="#374347" font-family="Arial, sans-serif" font-size="13">and reserve the east basket.</text>
+  <line x1="1112" y1="700" x2="1376" y2="700" stroke="#D7DEE0"/>
+  <rect x="1112" y="724" width="264" height="42" rx="6" fill="#FFFFFF" stroke="#087F72"/>
+  <text x="1190" y="751" fill="#087F72" font-family="Arial, sans-serif" font-size="14" font-weight="700">Back to sessions</text>
+</svg>

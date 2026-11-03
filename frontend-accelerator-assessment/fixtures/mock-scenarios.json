@@ -1,0 +1,121 @@
+{
+  "normal": {
+    "description": "Use the default list, details, and coaches fixtures.",
+    "defaultLatencyMs": 250
+  },
+  "empty": {
+    "description": "No sessions exist.",
+    "request": "GET /api/sessions",
+    "status": 200,
+    "body": {
+      "data": [],
+      "meta": {
+        "page": 1,
+        "pageSize": 10,
+        "total": 0
+      }
+    }
+  },
+  "list-error": {
+    "request": "GET /api/sessions",
+    "status": 500,
+    "body": {
+      "error": {
+        "code": "SESSIONS_UNAVAILABLE",
+        "message": "Sessions cannot be loaded right now."
+      }
+    }
+  },
+  "details-error": {
+    "targetSessionId": "ses_101",
+    "request": "GET /api/sessions/ses_101",
+    "status": 500,
+    "body": {
+      "error": {
+        "code": "SESSION_DETAILS_UNAVAILABLE",
+        "message": "Session details cannot be loaded right now."
+      }
+    }
+  },
+  "coaches-error": {
+    "request": "GET /api/coaches",
+    "status": 500,
+    "body": {
+      "error": {
+        "code": "COACHES_UNAVAILABLE",
+        "message": "Coach choices cannot be loaded right now."
+      }
+    }
+  },
+  "create-error": {
+    "request": "POST /api/sessions",
+    "status": 500,
+    "body": {
+      "error": {
+        "code": "CREATE_SESSION_FAILED",
+        "message": "The session could not be created."
+      }
+    }
+  },
+  "create-conflict": {
+    "request": "POST /api/sessions",
+    "status": 409,
+    "body": {
+      "error": {
+        "code": "COACH_SCHEDULE_CONFLICT",
+        "message": "The selected coach already has an overlapping session."
+      }
+    }
+  },
+  "cancel-forbidden": {
+    "permission": "manage",
+    "targetSessionId": "ses_101",
+    "request": "POST /api/sessions/ses_101/cancel",
+    "status": 403,
+    "body": {
+      "error": {
+        "code": "SESSION_CANCEL_FORBIDDEN",
+        "message": "You no longer have permission to cancel this session."
+      }
+    }
+  },
+  "cancel-conflict": {
+    "targetSessionId": "ses_101",
+    "request": "POST /api/sessions/ses_101/cancel",
+    "status": 409,
+    "body": {
+      "error": {
+        "code": "SESSION_STATE_CHANGED",
+        "message": "This session changed before it could be cancelled."
+      }
+    },
+    "subsequentDetailsOverride": {
+      "status": "cancelled",
+      "updatedAt": "2026-07-27T11:45:00Z",
+      "cancellation": {
+        "reason": "Cancelled by another operator.",
+        "cancelledAt": "2026-07-27T11:45:00Z"
+      }
+    }
+  },
+  "read-only": {
+    "description": "Use normal success fixtures with read-only permission.",
+    "permission": "read-only"
+  },
+  "slow-refresh": {
+    "description": "Use normal fixtures and keep existing content visible during the delayed background response.",
+    "request": "GET /api/sessions",
+    "latencyMs": 1500
+  },
+  "unknown-session": {
+    "targetSessionId": "ses_unknown",
+    "request": "GET /api/sessions/ses_unknown",
+    "status": 404,
+    "body": {
+      "error": {
+        "code": "SESSION_NOT_FOUND",
+        "message": "The requested session no longer exists."
+      }
+    }
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "id": "ses_103",
+  "title": "Private Footwork Review",
+  "type": "private",
+  "status": "scheduled",
+  "startsAt": "2026-08-05T17:00:00Z",
+  "durationMinutes": 60,
+  "capacity": 1,
+  "bookedCount": 0,
+  "visibility": "invite-only",
+  "coach": {
+    "id": "coach_01",
+    "name": "Maya Brooks",
+    "email": "maya@example.test"
+  },
+  "location": {
+    "name": "Studio B",
+    "address": "18 Harbor Street"
+  },
+  "description": "Individual movement review focused on balance, pivots, and first-step efficiency.",
+  "trainerNotes": null,
+  "createdAt": "2026-07-20T14:05:00Z",
+  "updatedAt": "2026-07-25T15:20:00Z",
+  "cancellation": null
+}

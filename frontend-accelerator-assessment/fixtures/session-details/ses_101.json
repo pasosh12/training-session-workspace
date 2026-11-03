@@ -1,0 +1,25 @@
+{
+  "id": "ses_101",
+  "title": "U14 Shooting Lab",
+  "type": "training",
+  "status": "scheduled",
+  "startsAt": "2026-08-03T16:00:00Z",
+  "durationMinutes": 90,
+  "capacity": 18,
+  "bookedCount": 14,
+  "visibility": "public",
+  "coach": {
+    "id": "coach_01",
+    "name": "Maya Brooks",
+    "email": "maya@example.test"
+  },
+  "location": {
+    "name": "North Court",
+    "address": "18 Harbor Street"
+  },
+  "description": "Small-group shooting mechanics, decision making, and game-speed repetitions.",
+  "trainerNotes": "Bring the portable shot clock and reserve the east basket.",
+  "createdAt": "2026-07-18T12:30:00Z",
+  "updatedAt": "2026-07-26T09:15:00Z",
+  "cancellation": null
+}
