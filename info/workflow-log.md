@@ -12,7 +12,7 @@ Values in this section are transcribed from what the developer states. Agents mu
 
 - Active work started: `2026-11-03 20:05 CET`
 - Active work finished: `<developer-stated timestamp>`
-- Substantial breaks: `<developer-stated list or "none">`
+- Substantial breaks: `2026-11-03 21:00 CET – <end pending; to be stated by the developer on resume>` (overnight pause; the developer said work resumes tomorrow)
 - Active time: `<developer-stated or computed only from the values above>`
 - Calendar time: `<computed only from start/finish above>`
 - Confirmation: `Time values were transcribed from the developer, not inferred by agents.`
@@ -20,7 +20,7 @@ Values in this section are transcribed from what the developer states. Agents mu
 ## Runtime Readiness
 
 - Assessment project starting commit: `7496544a3c51a09702f6cf245977e70d0989a196` (`chore: switch to advanced assessment package, provision msw and workflow log`)
-- Pre-coder checkpoint commit (planning artifacts exist, no production code yet): `c89cad2c81258f4bd0f0639cb9cfa3b99e7cc72b` (`docs(TASK-001): requirements, architecture, api-integration, ui-design`, committed 2026-11-03 20:50:48 +0100). It changes only `info/workflow-log.md` and `tasks/TASK-001/{requirements,architecture,api-integration,ui-design}.md`, with no files under `src/` (from `git show --stat HEAD`). Developer note: `implementation-plan.md` is added after this commit and before `coder`; a second checkpoint will follow `writing-plans`: `<hash pending>`.
+- Pre-coder checkpoint commit (planning artifacts exist, no production code yet): `c89cad2c81258f4bd0f0639cb9cfa3b99e7cc72b` (`docs(TASK-001): requirements, architecture, api-integration, ui-design`, committed 2026-11-03 20:50:48 +0100). It changes only `info/workflow-log.md` and `tasks/TASK-001/{requirements,architecture,api-integration,ui-design}.md`, with no files under `src/` (from `git show --stat HEAD`). Developer note: `implementation-plan.md` is added after this commit and before `coder`; a second checkpoint will follow `writing-plans`: `02ece184ffe0c54f2ba61269c37dd766a35505db` (`docs(TASK-001): implementation plan`, committed 2026-11-03 20:58:34 +0100). It changes only `info/workflow-log.md` and `tasks/TASK-001/implementation-plan.md`, with no files under `src/` (from `git show --stat HEAD`); its parent is `c89cad2`.
 - Runtime: `Claude Code <version>`, model `<model>`; Node.js `24.22.2`
 - Accelerator source: local checkout `frontend-accelerator-toolset` `0.1.0`, manifest `7e9501102f9b`
 - Install method: `npx --package <toolset> frontend-accelerator install`, then `frontend-accelerator setup` (`agent-browser@0.32.3`, `ctx7@0.5.5`)
