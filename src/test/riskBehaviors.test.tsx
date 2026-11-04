@@ -52,6 +52,8 @@ describe('E1: details URL param keeps every other query parameter and the hash',
   it('preserves ?scenario= and other params through open, close, back and forward', async () => {
     const { user } = renderApp({ url: '/?scenario=list-error&x=1#h' })
     const link = await screen.findByRole('link', { name: 'U14 Shooting Lab' })
+    // R-3: the href itself keeps the other params and the hash (new tab, copied link).
+    expect(link).toHaveAttribute('href', '/?scenario=list-error&x=1&session=ses_101#h')
     const expectBase = () => {
       const params = new URLSearchParams(window.location.search)
       expect(params.get('scenario')).toBe('list-error')
@@ -110,6 +112,17 @@ describe('E2: server 400 fieldErrors map to the form', () => {
     expect(alert).toHaveTextContent('Odd')
     expect(f.getByLabelText('Title')).toHaveValue('U16 Rebounding Clinic')
     expect(f.getByLabelText('Date')).toHaveFocus() // F24
+
+    // R-7: editing another field keeps the server's coach error; editing Coach clears it.
+    await user.type(f.getByLabelText('Title'), ' B')
+    expect(f.getByText('Unknown coach')).toBeInTheDocument()
+    expect(within(startGroup).getByText('Bad start')).toBeInTheDocument()
+    await user.selectOptions(f.getByLabelText('Coach'), 'Ethan Cole')
+    expect(f.queryByText('Unknown coach')).not.toBeInTheDocument()
+    expect(f.getByLabelText('Coach')).not.toHaveAttribute('aria-invalid')
+    await user.clear(f.getByLabelText('Start time'))
+    await user.type(f.getByLabelText('Start time'), '19:00')
+    expect(within(startGroup).queryByText('Bad start')).not.toBeInTheDocument()
   })
 })
 

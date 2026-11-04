@@ -1,5 +1,6 @@
 import type { MouseEvent } from 'react'
 import { formatListDateTime } from '../../../lib/datetime'
+import { hrefWithParam } from '../../../lib/useUrlParam'
 import type { Session } from '../model'
 import { SESSION_TYPE_LABELS } from '../status'
 import { StatusBadge } from '../ui/StatusBadge'
@@ -47,7 +48,7 @@ export function SessionsTable({
             <td role="cell" className="cell-session">
               <a
                 className="session-link"
-                href={`?session=${encodeURIComponent(session.id)}`}
+                href={hrefWithParam('session', session.id)}
                 data-session-id={session.id}
                 onClick={(event) => handleClick(event, session.id)}
               >

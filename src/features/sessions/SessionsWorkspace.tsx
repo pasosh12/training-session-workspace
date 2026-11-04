@@ -40,7 +40,8 @@ export function SessionsWorkspace() {
   const [createKey, setCreateKey] = useState(0)
   const [lastCreated, setLastCreated] = useState<LastCreated | null>(null)
   const [bannerSettled, setBannerSettled] = useState(false)
-  const [listCheckRequested, setListCheckRequested] = useState(false)
+  // `list.settled` when [Check Sessions List] was pressed; the prefix applies to the next settled run only (R-5).
+  const [listCheckSince, setListCheckSince] = useState<number | null>(null)
 
   const searchInputRef = useRef<HTMLInputElement>(null)
   const resultsHeadingRef = useRef<HTMLHeadingElement>(null)
@@ -113,7 +114,6 @@ export function SessionsWorkspace() {
   }, [isCreateOpen])
 
   const updateFilters = (next: SessionFilters) => {
-    setListCheckRequested(false)
     setFilters(next)
   }
 
@@ -158,7 +158,8 @@ export function SessionsWorkspace() {
     const { total } = listState.data
     const text =
       total > 0 ? sessionCount(total) : hasActiveFilters(filters) ? 'No sessions match these filters' : 'No sessions'
-    announcement = listCheckRequested && !listState.isRefreshing ? `List updated: ${text}` : text
+    const isListCheckResult = listCheckSince !== null && list.settled === listCheckSince + 1 && !listState.isRefreshing
+    announcement = isListCheckResult ? `List updated: ${text}` : text
   }
 
   const knownTitle =
@@ -256,7 +257,7 @@ export function SessionsWorkspace() {
         onClose={() => setCreateOpen(false)}
         onCreated={handleCreated}
         onRefreshList={() => {
-          setListCheckRequested(true)
+          setListCheckSince(list.settled)
           setRefreshKey((k) => k + 1)
         }}
       />

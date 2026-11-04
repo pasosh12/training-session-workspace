@@ -23,6 +23,26 @@ function urlWith(name: string, value: string | null): string {
   return `${window.location.pathname}${search ? `?${search}` : ''}${window.location.hash}`
 }
 
+/**
+ * Names whose `close()` already called history.back() and is waiting for the traversal.
+ * history.back() is asynchronous; until popstate lands the URL still holds the param, so a
+ * second close must not queue another traversal (review R-1).
+ */
+const pendingBack = new Set<string>()
+
+function releasePendingBack(name: string) {
+  const onPopState = () => {
+    window.removeEventListener('popstate', onPopState)
+    pendingBack.delete(name)
+  }
+  window.addEventListener('popstate', onPopState)
+}
+
+/** URL for links that set `name`, keeping every other parameter and the hash (review R-3). */
+export function hrefWithParam(name: string, value: string): string {
+  return urlWith(name, value)
+}
+
 function currentState(): Record<string, unknown> {
   const state: unknown = window.history.state
   return typeof state === 'object' && state !== null ? (state as Record<string, unknown>) : {}
@@ -53,8 +73,11 @@ export function useUrlParam(name: string): [string | null, UrlParamActions] {
 
   const close = useCallback(() => {
     if (new URLSearchParams(window.location.search).get(name) === null) return
+    if (pendingBack.has(name)) return
     const state = currentState()
     if (state[PUSHED_KEY] === name) {
+      pendingBack.add(name)
+      releasePendingBack(name)
       window.history.back()
       return
     }

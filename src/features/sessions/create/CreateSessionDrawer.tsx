@@ -27,6 +27,8 @@ export function CreateSessionDrawer({
 }) {
   const [values, setValues] = useState<CreateSessionFormValues>(initialValues)
   const [errors, setErrors] = useState<FieldErrors>({})
+  // Server-mapped field errors, kept until their own field is edited (review R-7).
+  const [serverErrors, setServerErrors] = useState<FieldErrors>({})
   const [submitAttempted, setSubmitAttempted] = useState(false)
   const [formError, setFormError] = useState<FormError | null>(null)
   const [showDiscard, setShowDiscard] = useState(false)
@@ -107,6 +109,14 @@ export function CreateSessionDrawer({
     const next = { ...values, [name]: value }
     setValues(next)
     if (submitAttempted) setErrors(validate(next, new Date(), coachIds))
+    // `startsAt` is shown on the Start group (mapped to `date`), so editing date or time clears it.
+    const clears: FieldName[] = name === 'time' ? ['time', 'date'] : [name]
+    setServerErrors((current) => {
+      if (!clears.some((field) => current[field])) return current
+      const next = { ...current }
+      for (const field of clears) delete next[field]
+      return next
+    })
   }
 
   const blurField = (name: FieldName) => {
@@ -125,6 +135,7 @@ export function CreateSessionDrawer({
     if (pendingRef.current || coaches.status !== 'success') return
     setSubmitAttempted(true)
     setFormError(null)
+    setServerErrors({})
     const clientErrors = validate(values, new Date(), coachIds)
     setErrors(clientErrors)
     if (Object.keys(clientErrors).length > 0) {
@@ -144,7 +155,8 @@ export function CreateSessionDrawer({
     if (failure.kind === 'http' && failure.code === 'VALIDATION_FAILED' && failure.fieldErrors) {
       const { fields, unmapped } = mapServerFieldErrors(failure.fieldErrors)
       const hasMapped = Object.keys(fields).length > 0
-      setErrors(fields)
+      setErrors({})
+      setServerErrors(fields)
       setFormError({ ...createFailureCopy(failure, hasMapped), details: unmapped })
       if (hasMapped) {
         focusFirstError(fields) // F24
@@ -244,7 +256,7 @@ export function CreateSessionDrawer({
       {isOpen ? (
         <CreateSessionForm
           values={values}
-          errors={errors}
+          errors={{ ...errors, ...serverErrors }}
           pending={isPending}
           coaches={coaches}
           formError={formError}

@@ -31,6 +31,8 @@ export function useAsyncResource<T>(
   const [state, setState] = useState<ResourceState<T>>(enabled ? { status: 'loading' } : { status: 'idle' })
   const [attempt, setAttempt] = useState(0)
   const [settled, setSettled] = useState(0)
+  // Set only by retry(): a re-run from an error caused by a key change is a new load, not a retry (R-6).
+  const retryRequested = useRef(false)
   const fetcherRef = useRef(fetcher)
   useLayoutEffect(() => {
     fetcherRef.current = fetcher
@@ -42,9 +44,11 @@ export function useAsyncResource<T>(
       return
     }
     const controller = new AbortController()
+    const isUserRetry = retryRequested.current
+    retryRequested.current = false
     setState((prev) => {
       if (prev.status === 'success') return { ...prev, isRefreshing: true }
-      if (prev.status === 'error') return { ...prev, isRetrying: true }
+      if (prev.status === 'error' && isUserRetry) return { ...prev, isRetrying: true }
       return { status: 'loading' }
     })
     fetcherRef.current(controller.signal).then(
@@ -69,5 +73,10 @@ export function useAsyncResource<T>(
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [...deps, attempt, enabled])
 
-  return { state, retry: () => setAttempt((n) => n + 1), settled }
+  const retry = () => {
+    retryRequested.current = true
+    setAttempt((n) => n + 1)
+  }
+
+  return { state, retry, settled }
 }

@@ -1,8 +1,10 @@
 // Domain types returned by the API client (architecture AD-5, AD-7 amendment 2026-11-04).
 // Timestamps are `Date` objects; DTO shapes with ISO strings stay in contract.ts.
-import type { SessionStatus, SessionType, Visibility } from './contract'
+import type { CreateSessionRequest, SessionStatus, SessionType, Visibility } from './contract'
 
 export type { SessionStatus, SessionType, Visibility }
+/** The create request shape, re-exported so features never import contract.ts (AD-7, review R-8). */
+export type { CreateSessionRequest }
 export { SESSION_STATUSES, SESSION_TYPES, VISIBILITIES } from './contract'
 
 export interface Coach {

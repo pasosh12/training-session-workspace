@@ -1,5 +1,5 @@
 import { useCallback, useRef, useState } from 'react'
-import type { CreateSessionRequest } from '../../../api/contract'
+import type { CreateSessionRequest } from '../../../api/types'
 import { ApiRequestError, type ApiFailure } from '../../../api/errors'
 import { createSession } from '../../../api/sessions'
 import type { SessionDetailsModel } from '../model'
