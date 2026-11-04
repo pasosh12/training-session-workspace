@@ -28,6 +28,28 @@ Values in this section are transcribed from what the developer states. Agents mu
 - Assessed runtime hook status: `claude: ACTIVE` (activated 2026-11-03T19:04:08.965Z); `codex: PENDING_ACTIVATION`
 - Blocking effect, if any: `none` (only `hooks:codex` is DEGRADED; all other checks PASS)
 
+## Commit hash mapping
+
+Before pushing to https://github.com/pasosh12/training-session-workspace, the developer rewrote history (rebase/amend + filter-branch) to change the commit author email. **Hashes in `tasks/TASK-001/*.md`, and in the rows and Runtime Readiness entries of this log, refer to the old column.**
+
+Verified on 2026-11-04 by this log's maintainer:
+- each pair has the same subject, author date (`%ad`), and committer date (`%cd`);
+- `git rev-parse <old>^{tree}` = `git rev-parse <new>^{tree}` for all 9 pairs, so file contents are identical;
+- the author email changed from `mukhammadjon.kayumov@innowise.com` to `54244843+pasosh12@users.noreply.github.com`;
+- the old commits are still present in the local object store.
+
+| Old | New | Date (author = committer) | Subject | Role |
+| --- | --- | --- | --- | --- |
+| `1e607e3` | `ef0a5eb` | 2026-11-03 19:45:55 +0100 | chore: scaffold Vite React TS workspace with test stack and Frontend Accelerator | |
+| `7496544` | `a7cafa8` | 2026-11-03 19:49:56 +0100 | chore: switch to advanced assessment package, provision msw and workflow log | starting commit |
+| `c89cad2` | `1dd3d11` | 2026-11-03 20:50:48 +0100 | docs(TASK-001): requirements, architecture, api-integration, ui-design | checkpoint 1 |
+| `02ece18` | `ccfc778` | 2026-11-03 20:58:34 +0100 | docs(TASK-001): implementation plan | plan checkpoint |
+| `c860590` | `37cc09d` | 2026-11-03 21:00:57 +0100 | docs(TASK-001): workflow log, pause | |
+| `2ee0db8` | `f4b1147` | 2026-11-04 18:09:52 +0100 | feat(TASK-001): training sessions workspace implementation | implementation |
+| `4231aac` | `06be95e` | 2026-11-04 18:25:07 +0100 | fix(TASK-001): review round 1 findings | |
+| `61c8ea2` | `8e78665` | 2026-11-04 18:50:39 +0100 | fix(TASK-001): browser-verify findings BV-1, BV-2, N-1 | verified code |
+| `6d3edee` | `dd85260` | 2026-11-04 19:17:39 +0100 | docs(TASK-001): verification, final report, evidence and workflow log | final |
+
 ## Role Decisions
 
 | Time | Role | Exact prompt used | Output/evidence | STOP observed | Developer decision | Developer-selected next action |
@@ -98,3 +120,4 @@ Recorded from the developer's own manual check (2026-11-04), transcribed as stat
     - BV-1 after a network failure checked only by a jsdom test;
     - most round-1 browser checks not repeated after the BV fixes;
     - round-2 BV-1 console not inspected.
+- Repository pushed: https://github.com/pasosh12/training-session-workspace. The local branch `main` tracks `origin/main`, and `git rev-parse HEAD origin/main` returned `dd85260cfc6756ea9a296a93f0b9c2a535d12151` for both (checked 2026-11-04). Commit hashes changed before the push; see "Commit hash mapping".
