@@ -134,13 +134,15 @@ src/
     details/               overlay + useSessionDetails
     create/                form, validation (pure), useCoaches, useCreateSession
     hooks/                 useSessionsList (+ optional useAsyncResource)
-    model.ts               domain types (Session, SessionDetailsModel, Coach, filters)
+    model.ts               feature-only types (SessionFilters, EMPTY_FILTERS, hasActiveFilters); may re-export domain types from api/types.ts
     status.ts              status → label/meaning (non-color text source)
   api/
     http.ts                single fetch wrapper: base URL, JSON, AbortSignal, error normalization
     sessions.ts            listSessions, getSession, createSession
     coaches.ts             listCoaches
-    contract.ts            DTO types copied from API_CONTRACT.md
+    types.ts               domain types (Session, SessionDetailsModel, Coach, SessionsPage) with Date fields, plus the
+                           domain unions and value lists (SessionStatus, SessionType, Visibility and their arrays)
+    contract.ts            DTO types copied from API_CONTRACT.md (importable only by api/ and mocks/)
     mappers.ts             DTO ↔ domain (date parsing, request building)
   lib/
     datetime.ts            Intl formatters, local date+time → Date
@@ -158,6 +160,8 @@ Allowed imports (arrows point to the dependency):
 
 - `app → features → api, lib`
 - `features/*` may import `features/sessions/model.ts` and `status.ts`; subfolders don't import each other's internals except through what `SessionsWorkspace` passes down.
+- `features → api/types.ts` (directly or through the re-exports in `features/sessions/model.ts`) for domain types and unions. **`features` never imports `api/contract.ts`.**
+- Inside `api/`: `types.ts` may derive its unions and value lists from `contract.ts`. `mappers.ts`, `sessions.ts`, and `coaches.ts` import both. **`contract.ts` is imported only by `src/api/*` and `src/mocks/*`.**
 - `api → lib` (datetime parsing only). `api` never imports `features`, `mocks`, or React.
 - `mocks → api/contract.ts` (to share contract types) and the fixtures. **Nothing in `app`, `features`, `api`, or `lib` imports `mocks`**; only `main.tsx` and `test/` do.
 - Components never call `fetch`; only `api/http.ts` does (AC-M6).
@@ -165,6 +169,8 @@ Allowed imports (arrows point to the dependency):
 Form validation is a pure module (`create/validation.ts`, taking `now`) so it can be unit-tested and reused for mapping server `fieldErrors`.
 
 The starter files (`App.css`, `src/assets/*`, starter content of `App.tsx` / `App.test.tsx`) are replaced. They are the scaffold placeholder, not unrelated code.
+
+**Amendment 2026-11-04 (domain type location).** The `coder` stopped at plan step S1. The original tree put the domain types in `features/sessions/model.ts`, but `api/mappers.ts` and `api/sessions.ts` must return them, so `api` would have had to import `features`, which this section forbids. The developer chose this fix: the domain types (`Session`, `SessionDetailsModel`, `Coach`, `SessionsPage`) and the domain unions live in the new `src/api/types.ts`. `features/sessions/model.ts` keeps only feature types (`SessionFilters`, `EMPTY_FILTERS`, `hasActiveFilters`) and may re-export the domain types. `contract.ts` remains importable only by `api/` and `mocks/`. The dependency direction is unchanged (`app → features → api, lib`; `api` never imports `features`). Rejected: a type-only exception that would let `api` import from `features` (it weakens the rule for one convenience). Implementation implication: plan steps S1 and S3 put the domain types in `api/types.ts` instead of `features/sessions/model.ts`. No other decision changes.
 
 ## AD-8. Test stack
 
