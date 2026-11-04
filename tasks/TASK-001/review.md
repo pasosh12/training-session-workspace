@@ -179,3 +179,73 @@ Run from `/home/user/WebstormProjects/training-sessions-workspace` on 2026-11-04
 | 0 | `test -z "$(git status --porcelain frontend-accelerator-assessment)"` |
 
 Still not verified in a browser: the real two-entry history jump (R-1) and everything listed under "Residual Gaps".
+
+---
+
+## Re-review (round 2)
+
+**Updated verdict: PASS.** No blocking or should-fix findings remain. Two new findings (N-1, N-2) are low or info and do not block.
+
+| | |
+| --- | --- |
+| Reviewer | `code-reviewer` (read-only) |
+| Date | 2026-11-04 |
+| Range | `HEAD~1..HEAD`: one commit, `4231aac fix(TASK-001): review round 1 findings`, on top of `2ee0db8`. Working tree clean against HEAD. |
+| Scope | The fixes for R-1 to R-3 and R-5 to R-8, the accepted-limitation records for R-4, R-9 and R-10, and regressions introduced by this commit. |
+| Independent evidence (this review) | `npx vitest run`: exit 0, 5 files, 23 tests passed, no stderr. `npm run typecheck`: exit 0. `npm run lint`: 0 warnings or errors. `grep -rn "api/contract" src/features src/app src/lib`: no output, exit 1. `grep -rnE "scenario\|fixtures" src/app src/features src/api src/lib`: no output, exit 1. I did not re-run the build. That the R-1 test failed before the fix comes from the coder's report; I didn't reproduce it here, because a read-only check-out of the old code would modify the tree. |
+
+### Remediation verification
+
+| Finding | Remediation | Verdict | Notes |
+| --- | --- | --- | --- |
+| R-1 | `pendingBack` guard in `src/lib/useUrlParam.ts:31-37, 76-81` | **confirmed** | A second `close()` before `popstate` returns early. The guard is released by a one-shot `popstate` listener registered before `history.back()`, so a later open and close works again; the test checks this (second `back` call). The only regression risk would be a missing `popstate` after a same-document `back()`, and none is expected: a cross-document back unloads the module anyway. The test asserts the `history.back()` call count, not the browser's history position, because jsdom merges traversals. The real two-entry jump remains a `browser-verify` item. |
+| R-2 | `src/test/remediation.test.tsx` (AC-C8, two tests) | **confirmed** | The tests cover the hidden variant with no new row, [Show All Sessions] (filter reset, F28 focus, row with "New", banner switched to "present", button removed), [Open Session] opening the details, and the refresh-failed variant with the list alert. These are behavior-level assertions on full banner text through `role="status"`. |
+| R-3 | `hrefWithParam()` used by `SessionsTable.tsx:51` | **confirmed** | It uses the same URL builder as `push()`, so the encoding is identical and goes through `URLSearchParams`. E1 asserts the exact `href`. The `href` is computed at render from `window.location`, and rows re-render whenever `session` changes, because `SessionsWorkspace` subscribes to it. A hash-only change (skip link) leaves an older hash in hrefs until the next render. That is cosmetic, so not a finding. |
+| R-4 | No code change | **accepted limitation (confirmed)** | The developer's rationale is recorded: the AD-4 page-size trade-off, with pagination optional. |
+| R-5 | `listCheckSince` + `settled === since + 1` in `SessionsWorkspace.tsx` | **confirmed** | The prefix is now scoped to the run triggered by [Check Sessions List]. The removed reset in `updateFilters` is no longer needed. The test covers both the prefix and its disappearance. |
+| R-6 | `retryRequested` ref in `useAsyncResource.ts` | **confirmed** | Only `retry()` keeps the error with `isRetrying`. A key change from the error state shows `loading`. Checked for regressions: details retry (E7), coaches retry (E3, F31) and list retry (T6, F12) still pass. The discoverability phase doesn't depend on `isRetrying` since round 1, because it is `settled`-based. |
+| R-7 | Separate `serverErrors` in `CreateSessionDrawer.tsx`, merged at `:259` | **confirmed** | Editing a field clears only its own server error, editing date or time clears the Start group's `startsAt` error, and a new submit clears them all. E2 is extended to cover keep, clear-by-field and clear-by-time. See N-1 for a small leftover. |
+| R-8 | `CreateSessionRequest` re-exported from `src/api/types.ts`; `useCreateSession.ts:2` imports it there | **confirmed** | The `api/contract` grep over `src/features src/app src/lib` is now empty, as I checked independently. |
+| R-9 | No code change | **accepted limitation (confirmed)** | The developer's rationale is recorded: P-3, mocks on in all modes, no real backend. |
+| R-10 | No code change | **accepted limitation (confirmed)** | The developer's decision (§7 over F6) is recorded. `ui-design.md` F6 still states the old rule, which matters for doc readers only. |
+
+### New findings (round 2)
+
+#### N-1 · Low · forms: the form-level message stays after the server field errors are gone
+
+- **Where:** `src/features/sessions/create/CreateSessionDrawer.tsx:160` (set on a 400 with mapped fields). It is cleared only at the next submit (`:137`).
+- **Problem:** after R-7, the user can clear every server field error by editing those fields. The form-level box still says "The session wasn't created. Fix the highlighted fields, then submit again.", but nothing is highlighted any more. This is a stale message, not a wrong state. Before R-7 the same staleness existed, and the field errors disappeared even sooner, so this is a leftover rather than a regression.
+- **Failure scenario:** after a server 400 with `fieldErrors: { coachId }`, choose another coach. The coach error disappears, but the box still asks to fix highlighted fields.
+- **Status:** ~~unresolved~~ → **resolved** (coder, 2026-11-04, after browser-verify; see "N-1 status update" at the end of this file). Original note: optional for `coder`, drop the "highlighted fields" sentence once `serverErrors` is empty and no client errors remain.
+
+#### N-2 · Info · test hygiene: the R-1 spy isn't restored if an assertion fails
+
+- **Where:** `src/test/historyGuard.test.tsx:19, 40`. `vi.spyOn(window.history, 'back')` is restored only on the success path, and `vite.config.ts` doesn't set `restoreMocks`.
+- **Problem:** if an assertion fails before line 40, the spy stays on `window.history.back` for the rest of that file. The file has only one test today, so there is no current impact.
+- **Status:** accepted limitation (no current effect). An optional hardening for `coder` or `test-generator` is `onTestFinished(() => back.mockRestore())`.
+
+### Pre-existing behavior noticed (not introduced by this commit; not a finding)
+
+If a details close and a new open happen within the same frame (close starts `history.back()`, then a row click calls `pushState` before the traversal lands), the queued traversal goes back to the previously opened session's entry. This existed before round 1. The R-1 guard neither causes nor fixes it, and it needs an unrealistically fast close-then-click. I'm recording it for `browser-verify` awareness only.
+
+### Residual gaps (unchanged)
+
+These still need a real browser (`browser-verify`): the 1440×900 and 390×844 layouts, horizontal overflow, contrast as rendered, Chrome's non-cancelable `cancel` behavior and the 100 ms handled window in `Drawer.tsx`, the real R-1 history jump, screen-reader announcements (L1–L5), and `beforeunload`.
+
+### Suggested follow-up
+
+There are no required code changes. N-1 is an optional `coder` change. `browser-verify` is the remaining evidence gap. Which to run and in what order is the developer's choice.
+
+---
+
+## N-1 status update (coder, after browser-verify)
+
+Date 2026-11-04. N-1 was bundled with browser-verify BV-1 by developer decision. It was implemented according to the ui-design 2026-11-04 amendment ("When the form-level box disappears").
+
+| Finding | Status | Change | Evidence |
+| --- | --- | --- | --- |
+| N-1 | **resolved** | `src/features/sessions/create/CreateSessionDrawer.tsx`: a box shown for a `400 VALIDATION_FAILED` with mapped server field errors is marked `fieldBased`. Once no server or client field error is highlighted, it is removed, or, when unmapped server messages exist, it keeps them and its message becomes "The session wasn't created. Check the form, then submit again.". Boxes for 500, network, contract, or a 400 without `fieldErrors` aren't affected by field edits. All boxes are still cleared at the next submit and when the drawer closes. | `src/test/formErrorFeedback.test.tsx`, "N-1" block: box removed after the coach error is cleared (an edit to another field keeps it; focus stays on the edited field); unmapped "Odd" kept with "Check the form…" and without "Fix the highlighted fields"; a 500 box survives a field edit. The first two tests **failed before the fix** and pass after it. The third passed before and after, and guards against removing the box too eagerly. |
+| N-2 | accepted limitation (unchanged) | — | — |
+
+No re-review of this change has been performed.
+

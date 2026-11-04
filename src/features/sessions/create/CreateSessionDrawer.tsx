@@ -32,6 +32,8 @@ export function CreateSessionDrawer({
   const [submitAttempted, setSubmitAttempted] = useState(false)
   const [formError, setFormError] = useState<FormError | null>(null)
   const [showDiscard, setShowDiscard] = useState(false)
+  // Incremented to move focus to the form-level error box after it renders (F25, amended F26).
+  const [errorFocusRequest, setErrorFocusRequest] = useState(0)
 
   const coachesResource = useCoaches(isOpen)
   const coaches = coachesResource.state
@@ -73,6 +75,16 @@ export function CreateSessionDrawer({
     }
     previousShowDiscard.current = showDiscard
   }, [showDiscard])
+
+  // F25 / amended F26 (2026-11-04): focus the form-level error box and scroll it to the top of the
+  // drawer body so it is visible below the sticky header. Default (instant) scrolling is used.
+  useEffect(() => {
+    if (errorFocusRequest === 0) return
+    const box = formErrorRef.current
+    if (!box) return
+    box.focus({ preventScroll: true })
+    box.scrollIntoView?.({ block: 'start' })
+  }, [errorFocusRequest])
 
   // F31: after a successful coaches retry, focus the coach select.
   const previousCoachStatus = useRef(coaches.status)
@@ -157,20 +169,29 @@ export function CreateSessionDrawer({
       const hasMapped = Object.keys(fields).length > 0
       setErrors({})
       setServerErrors(fields)
-      setFormError({ ...createFailureCopy(failure, hasMapped), details: unmapped })
+      setFormError({ ...createFailureCopy(failure, hasMapped), details: unmapped, fieldBased: hasMapped })
       if (hasMapped) {
         focusFirstError(fields) // F24
       } else {
-        requestAnimationFrame(() => formErrorRef.current?.focus()) // F25
+        setErrorFocusRequest((n) => n + 1) // F25
       }
       return
     }
     const copy = createFailureCopy(failure, false)
     setFormError({ ...copy, details: [] })
-    if (failure.kind === 'http' && failure.code === 'VALIDATION_FAILED') {
-      requestAnimationFrame(() => formErrorRef.current?.focus()) // F25
-    }
-    // F26: otherwise focus stays on the submit button.
+    setErrorFocusRequest((n) => n + 1) // F25 (400 without fieldErrors) and amended F26 (other failures)
+  }
+
+  // N-1 (ui-design amendment 2026-11-04): a field-based box goes away once nothing is highlighted;
+  // with unmapped server messages it stays, without the "highlighted fields" sentence.
+  const hasHighlightedErrors =
+    Object.values(serverErrors).some(Boolean) || Object.values(errors).some(Boolean)
+  let visibleFormError = formError
+  if (formError?.fieldBased && !hasHighlightedErrors) {
+    visibleFormError =
+      formError.details.length > 0
+        ? { ...formError, message: "The session wasn't created. Check the form, then submit again." }
+        : null
   }
 
   const initialFocusRef = useMemo(
@@ -259,7 +280,7 @@ export function CreateSessionDrawer({
           errors={{ ...errors, ...serverErrors }}
           pending={isPending}
           coaches={coaches}
-          formError={formError}
+          formError={visibleFormError}
           formErrorRef={formErrorRef}
           fieldRefs={fieldRefs}
           coachRetryPending={coaches.status === 'error' && coaches.isRetrying}

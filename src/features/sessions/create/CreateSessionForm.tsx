@@ -17,6 +17,8 @@ export interface FormError {
   message: string
   details: string[]
   uncertain: boolean
+  /** A 400 with mappable server field errors: removable once they are cleared (ui-design N-1 rules). */
+  fieldBased?: boolean
 }
 
 /**

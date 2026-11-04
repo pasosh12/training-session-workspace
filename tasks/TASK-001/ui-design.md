@@ -357,7 +357,7 @@ After a `201`:
 | F23 | Submit pending | Stays on [Create Session] (`aria-disabled`, "Creating…") |
 | F24 | Server `400` with mappable `fieldErrors` | First field with an error |
 | F25 | Server `400` with no mappable `fieldErrors` | Form-level error box (`tabindex="-1"`) |
-| F26 | Server `500`, `network`, `contract`, or other failure | Stays on [Create Session], now enabled again. The form error box is announced through `role="alert"`. |
+| F26 | Server `500`, `network`, `contract`, or other failure | **Amended 2026-11-04 (see below).** Focus moves to the **form-level error box** (`tabindex="-1"`, as in F25), and the box is scrolled into view. [Create Session] in the footer is enabled again. ~~Stays on [Create Session], now enabled again.~~ |
 | F27 | Create **success** | Header **[Create Session]**, because the drawer closes and the trigger may be gone. The banner announces through `role="status"`. The banner comes next in DOM order, so the next Tab reaches [Open Session]. |
 | F28 | Banner [Show All Sessions] | Banner [Open Session], because the reset button disappears |
 | F29 | Banner [Dismiss] | Results heading |
@@ -374,6 +374,33 @@ After a `201`:
 | F40 | Create response arrives during a self-close | The drawer is reopened first, then F26 (error) or F27 (success) applies |
 
 Implementation rule: buttons that start a request use `aria-disabled` plus an activation guard, never native `disabled`, so focus is never dropped to `<body>`. Native `disabled` is used only for controls that are unavailable *before* any interaction: Clear filters when nothing is active, submit when coaches aren't loaded, and the coach select while it's loading.
+
+**Amendment 2026-11-04: F26 focus and form-level error visibility (browser-verify BV-1, review N-1).**
+
+*Why.* Browser verification (`tasks/TASK-001/browser-verification.md`, BV-1) showed a problem with the original F26. To reach the lower fields and the footer, the user scrolls the create drawer body. After a failed create, the error box at the top of the body is then above the visible area at both 1440×900 and 390×844, while focus stays on the footer submit. Sighted users only see the button label change back. The developer chose to change F26.
+
+*F26, new rule* (applies to `500 CREATE_SESSION_FAILED`, `network`, `contract`, and any other non-2xx without mappable `fieldErrors`):
+1. Once the error box is rendered, move focus to it. The box has `tabindex="-1"`, the same element F25 uses.
+2. Make sure the whole box is visible inside the drawer body, below the sticky drawer header, at both viewports:
+   - Scroll the drawer body so the box's top sits at the top of the body. `focus()` alone may stop at the nearest visible edge, so also call `scrollIntoView({ block: 'start' })` on the box, or set an equivalent `scroll-margin-top` that clears the sticky header.
+   - Use an instant scroll under `prefers-reduced-motion: reduce`. A short smooth scroll is allowed otherwise.
+   - The page behind the modal doesn't scroll.
+3. The box keeps its `role="alert"` content. Focusing it lets screen readers read it from the focused element. Implementations must not add a second live region for the same message, so the text is announced at most once.
+4. [Create Session] stays enabled in the sticky footer, which is visible without scrolling. Tab order is unchanged: from the box, Tab goes to [Check Sessions List] when it is present, then to the form fields, and last to the footer buttons.
+5. F33 is unchanged: activating [Check Sessions List] keeps focus on that button.
+
+F25 (a `400` with no mappable `fieldErrors`) and F24 (a `400` with mappable `fieldErrors`, focus on the first errored field) are unchanged. For F24 the box is still rendered but not focused, because focus is on the field.
+
+*When the form-level box disappears* (review N-1):
+
+| Box shown because of | The box is removed when | Otherwise |
+| --- | --- | --- |
+| `400 VALIDATION_FAILED` with server field errors and **no** unmapped messages | The user has cleared every server-highlighted field error by editing those fields (per review R-7, each field's server error clears when that field changes), **and** no client validation error is showing. | It stays, with the "Fix the highlighted fields, then submit again." message. |
+| `400 VALIDATION_FAILED` with server field errors **and** unmapped messages | Never removed by field edits, because unmapped messages can't be fixed field by field. Once every highlighted field error is cleared, drop the sentence "Fix the highlighted fields, then submit again." and keep the unmapped messages with "Check the form, then submit again." | — |
+| `400` with no `fieldErrors`, `500`, `network`, `contract`, or another code | Not removed by field edits: the message describes the outcome of the last attempt, not a field state. | — |
+| Any of the above | Always cleared at the start of the next submit attempt, and when the drawer closes. | — |
+
+When the box is removed by a field edit, focus doesn't move (it is already on the edited field), and nothing is announced.
 
 ## 9. Live-Region Rules
 
