@@ -249,3 +249,59 @@ Date 2026-11-04. N-1 was bundled with browser-verify BV-1 by developer decision.
 
 No re-review of this change has been performed.
 
+
+---
+
+## Re-review (round 3)
+
+**Updated code-review verdict: PASS.** No blocking or should-fix findings. The fixes for BV-1, BV-2 and N-1 are confirmed in code. Two new info-level notes (N-3, N-4) concern assistive-technology behavior and need no code change before browser or AT checking. The **browser** verdict in `browser-verification.md` remains FAIL until `browser-verify` re-checks BV-1 and BV-2. This review can't replace that check.
+
+| | |
+| --- | --- |
+| Reviewer | `code-reviewer` (read-only) |
+| Date | 2026-11-04 |
+| Range | `HEAD~1..HEAD`: one commit, `61c8ea2 fix(TASK-001): browser-verify findings BV-1, BV-2, N-1`, on top of `4231aac`. Working tree clean against HEAD. |
+| Production files in range | `src/features/sessions/create/CreateSessionDrawer.tsx`, `src/features/sessions/create/CreateSessionForm.tsx` (type only), `src/features/sessions/sessions.css` |
+| Reviewed against | `ui-design.md` F26 row and the "Amendment 2026-11-04: F26 focus and form-level error visibility" (including the N-1 disappearance table); `browser-verification.md` BV-1, BV-2 and the remediation section; review N-1 |
+| Independent evidence (this review) | `npx vitest run`: exit 0, 6 files, 28 tests passed, no stderr. `npm run typecheck`: exit 0. `npm run lint`: 0 warnings or errors. `grep -rnE "scenario\|fixtures" src/app src/features src/api src/lib`: no output, exit 1. I didn't re-run the build or a browser. That the tests failed before the fix comes from the coder's report and wasn't reproduced here (read-only). |
+
+### Remediation verification
+
+| Finding | Verdict | Notes |
+| --- | --- | --- |
+| BV-1 (amended F26) | **confirmed in code; browser re-check pending** | `CreateSessionDrawer.tsx:81-87`: an effect keyed on the `errorFocusRequest` counter runs after the commit that renders the box. It calls `focus({ preventScroll: true })` and then `scrollIntoView?.({ block: 'start' })`. Matching the amendment: the counter is incremented for 500, network, contract, other non-2xx, and a 400 with no mappable field errors (F25). A 400 with mappable fields still focuses the first field (F24) and doesn't request box focus. The scroll is instant (no `behavior: 'smooth'`), which satisfies the reduced-motion clause. The drawer header is a sibling of the scroll container `.drawer__body`, not inside it, so `block: 'start'` places the box directly below the header rather than under it. Because the effect replaced the earlier `requestAnimationFrame` focus, the change also makes F25 focus deterministic after commit. Optional chaining on `scrollIntoView` keeps jsdom from throwing. Not provable in jsdom: the actual visible position, and that the modal's page doesn't scroll (amendment item 2). Both are for the browser. |
+| BV-2 | **plausible in code; browser re-check pending** | `sessions.css`: `.input-suffix span { flex: none; white-space: nowrap; overflow-wrap: normal }` overrides the global `overflow-wrap: anywhere` and stops the suffix shrinking. `.input-suffix input { flex: 1; min-width: 0 }` lets the input absorb the width, despite `.create-form input { width: 100% }`, because flex shrinking applies once `min-width` is 0. No automated proof is possible (layout). |
+| N-1 | **confirmed** | `CreateSessionDrawer.tsx:187-195` derives `visibleFormError` at render. No extra state is kept, so it can't get out of sync. A `fieldBased` box (a 400 with mapped server field errors) is hidden when neither `serverErrors` nor client `errors` has a truthy value. With unmapped messages it stays, with "The session wasn't created. Check the form, then submit again.". Non-field boxes are unaffected by edits. All boxes still clear at the next submit (`setFormError(null)`) and on close (the drawer remounts per open via `key`). This matches every row of the amendment table. Tests cover removal, the kept-unmapped wording, and a 500 box surviving an edit, with focus staying on the edited field. |
+| N-2 | accepted limitation (unchanged) | — |
+
+**Regression check.** Re-read for this range:
+- F24: E2 still focuses Date.
+- F25: path now effect-based.
+- F33: [Check Sessions List] keeps its own focus.
+- R-7: per-field server error clearing, unchanged code, and E2 still passes.
+- T5: values kept after a 500.
+
+No regression found. The `FormError.fieldBased` field is optional, so existing `setFormError` call sites are unaffected.
+
+### New notes (round 3)
+
+#### N-3 · Info · accessibility: focus plus `role="alert"` may double-announce the error
+
+- **Where:** `CreateSessionForm.tsx:88-89`. The focused box (`tabindex="-1"`) wraps the `role="alert"` element.
+- **Observation:** with amended F26, a failure both inserts alert content (an assertive announcement) and moves focus to the box (screen readers read the focused content). Some screen readers will therefore read the message twice. The amendment rules out adding a *second live region*, and the implementation complies. But the amendment's claim that the text is "announced at most once" depends on assistive-technology behavior.
+- **Status:** open, for AT verification (`browser-verify` with a screen reader, or an accepted limitation). No code change is recommended without that evidence. If it proves noisy, the owner of the fix is `ui-designer`: for example, drop `role="alert"` when focus is moved.
+
+#### N-4 · Info · accessibility: the unmapped-message wording change is re-announced while editing
+
+- **Where:** `CreateSessionDrawer.tsx:189-193`
+- **Observation:** in the unmapped-messages case, clearing the last highlighted field changes the alert's text to "…Check the form, then submit again.". Because the content changed, it is re-announced assertively while the user is interacting with a field (for example, right after choosing a coach). The amendment specifies "nothing is announced" only for box *removal*, and is silent about this wording change.
+- **Status:** open, for an `ui-designer` decision if AT testing shows it is disruptive. The behavior follows the written rules, so it is not a defect.
+
+### Residual gaps
+
+- `browser-verify` must re-check BV-1 (box visible and focused after a `create-error` 500, and after a network failure, at 1440×900 and 390×844, with the page behind the modal not scrolling) and BV-2 (suffixes on one line at both viewports).
+- The earlier residual gaps still apply: screen-reader announcements (now including N-3 and N-4), measured contrast, reduced motion, `beforeunload`, touch and back gestures, and non-Chrome browsers.
+
+### Suggested follow-up
+
+There are no required code changes. Next comes a browser re-check (`browser-verify`). N-3 and N-4 need AT evidence before any design decision. Which to run and in what order is the developer's choice.

@@ -130,3 +130,79 @@ Run from `/home/user/WebstormProjects/training-sessions-workspace`:
 | 0 | `test -z "$(git status --porcelain frontend-accelerator-assessment)"` |
 
 Still open: a browser re-check of BV-1 (error box visible after a 500 at 1440×900 and 390×844, with focus on it) and BV-2 (suffixes on one line).
+
+---
+
+## Re-verification (round 2)
+
+**Verdict: PASS.** BV-1 and BV-2 now pass at both required viewports, and the regression pass (populated list, create success, list error) shows no regressions. This supersedes the round-1 FAIL verdict above for BV-1 and BV-2. Round-1 results for the other checks still stand and were not all re-run (see "Not re-run").
+
+| | |
+| --- | --- |
+| Role | `browser-verify` (read-only; no code, test, config, or data changes) |
+| Date | 2026-11-04, about 18:53–19:00 CET |
+| Code under test | HEAD `61c8ea2 fix(TASK-001): browser-verify findings BV-1, BV-2, N-1`. No `src/` changes in the working tree. The served modules were confirmed to contain the fix: `curl …/CreateSessionDrawer.tsx` contains `errorFocusRequest` (3 matches) and `curl …/sessions.css` contains the BV-2 rule. |
+| URL | `http://localhost:5173/`. The same developer-run server as round 1: PID 163062 `node …/node_modules/.bin/vite` (parent `npm run dev`, PID 163050), listening on `127.0.0.1:5173` (`lsof`). |
+| Server ownership | **Developer-owned.** This role neither started nor stopped any server. PID 163062 was still running after verification. |
+| Readiness | `node ./toolchain/bin/doctor.mjs --json` → `DEGRADED` (only `hooks:codex`); `capability:browser` PASS |
+| Browser | Project adapter `node toolchain/bin/agent-browser.mjs`, HeadlessChrome 156 (same as round 1) |
+| Adapter session | `task001-bv-r2-20261104` |
+| Viewports | 1440 × 900, 390 × 844 (native loads, no mid-flow resize for the mobile BV-1 run) |
+
+### Re-checked findings
+
+| # | Check | Viewport | Verdict | Evidence |
+| --- | --- | --- | --- | --- |
+| BV-1 | After a failed create (`?scenario=create-error`), the form error box is visible at the top of the drawer and focused | 1440×900 | **PASS** | All 10 fields were filled top to bottom, including Description and Trainer notes, so the drawer body was scrolled (`scrollTop` 176) before submitting. `POST /api/sessions → 500`. Afterwards: body `scrollTop` 16, box `top 73 / bottom 139` with the drawer header bottom at 73 and the footer top at 835, so it is **fully visible, directly below the header**. `document.activeElement` is the `.form-error` box. The page behind the modal didn't scroll (`scrollY` 0). Alert text: "The session couldn't be created. Your entries are kept. Submit again to retry." All 10 values are kept. Screenshot `create-error-desktop.png` (replaced). |
+| BV-1 | Same | 390×844 | **PASS** | Fresh load at 390×844, same fill. Body `scrollTop` 409 before submitting, then 16 after the 500. Box `top 77 / bottom 143`, header bottom 77, footer top 775: fully visible and focused. `scrollY` 0; `documentElement.scrollWidth` 390 (no horizontal overflow). Tab from the box goes to Title, then Session type, matching amended F26 item 4. The values are kept (checked: Title, Trainer notes). Screenshot `create-error-mobile.png` (replaced). |
+| BV-2 | Duration "min" and Capacity "places" suffixes stay on one line | 1440×900 | **PASS** | `.input-suffix span`: "min" height 20 px with line height 20 px and 1 client rect; "places" height 20 px and 1 client rect. Visible in `create-error-desktop.png` ("60 min", "20 places"). |
+| BV-2 | Same | 390×844 | **PASS** | "min" 20 px with 1 rect; "places" 20 px with 1 rect. Visible in `create-error-mobile.png`. |
+
+### Regression pass
+
+| Check | Verdict | Evidence |
+| --- | --- | --- |
+| Populated list, desktop | **PASS** | `snapshot -i`: h1 "Training sessions", "Create session", Search, Status, h2 "5 sessions", 5 row links. `scrollWidth 1440 = clientWidth 1440`. `populated-desktop.png` (replaced). |
+| Populated list, mobile | **PASS** | `scrollWidth 390 = clientWidth 390`; no interactive control under 44 px. `populated-mobile.png` (replaced). |
+| Create success (no double submit) | **PASS** | A valid form submitted with adapter `dblclick` sent exactly **one** `POST /api/sessions → 201`. The drawer closed, focus went to the header "Create session" (F27), the banner reads "Session “Regression Pass Clinic” created. It's marked New in the list.", the list shows 6 sessions, and the new row has the "New" tag. `create-success-desktop.png` (replaced). |
+| Error scenario: `?scenario=list-error` with retry | **PASS** | `role="alert"` "Sessions couldn't load / Sessions can't be loaded right now. Try again in a moment.". Search stays enabled. Retry via keyboard (focus + Enter) sends another request; the alert remains and focus stays on [Try Again]. `GET /api/sessions → 500` ×2. `list-error-desktop.png` (replaced). |
+| Discard after the BV-1 run | **PASS** | Cancel on the dirty form shows the discard bar, and [Discard] closes the drawer. |
+
+### Console, page errors, network
+
+- **Console:** the buffer was cleared once, at the start of the regression pass. From then until the end: only React DevTools info ×2 and `[mocks] scenario: normal` / `list-error`, with no `error` or `warn`. The console for the BV-1 segment, before that clear, was **not inspected**. The round-1 console for the same flows was clean.
+- **Page errors:** `errors` was empty at the end and never cleared in this session, so there were no uncaught exceptions anywhere in round 2.
+- **Network:**
+  - BV-1: `POST /api/sessions → 500` at both viewports (scenario-intended).
+  - Regression: `POST /api/sessions → 201` ×1, `GET /api/sessions → 500` ×2 under `list-error` (scenario-intended).
+  - No 4xx responses, no unexpected navigation.
+
+### Evidence changes
+
+Replaced in `tasks/TASK-001/evidence/`:
+- `create-error-desktop.png`
+- `create-error-mobile.png`
+- `populated-desktop.png`
+- `populated-mobile.png`
+- `create-success-desktop.png`
+- `list-error-desktop.png`
+
+The round-1 versions, including the FAIL state of BV-1 and BV-2, are preserved in commit `61c8ea2`. The other 10 screenshots are unchanged from round 1.
+
+### Not re-run in round 2
+
+These were not repeated in round 2; their round-1 results above still stand:
+- validation;
+- the AC-C8 hidden-by-filter flow;
+- empty and no-matches;
+- `details-error` and `coaches-error`;
+- the Escape ×3 burst;
+- the R-1 double close;
+- `?scenario=` persistence;
+- keyboard Tab order of the list.
+
+BV-1 after a **network** failure (as opposed to a 500) was not exercised in the browser; it is covered only by the jsdom test. The earlier gaps still apply: screen-reader output (including N-3 and N-4), measured contrast, reduced motion, `beforeunload`, touch and back gestures, and non-Chrome browsers.
+
+### Session closure
+
+The adapter session `task001-bv-r2-20261104` was closed with `close` ("✓ Browser closed"). The `session list` 3 s later showed **"No active sessions"**. No other session or user browser was touched, and the developer's Vite server (PID 163062) was left running.
